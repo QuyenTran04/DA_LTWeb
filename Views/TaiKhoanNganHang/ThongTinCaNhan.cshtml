@@ -1,28 +1,79 @@
-﻿@if (Model != null)
-{
-    <div class="alert alert-info mt-4">
-        Bạn hiện chưa có thẻ ngân hàng nào. Hãy đăng ký thẻ để tiếp tục sử dụng dịch vụ.
-    </div>
-    <button class="btn btn-primary" onclick="document.getElementById('form-lam-the').style.display = 'block'">
-        <i class="bi bi-credit-card"></i> Làm thẻ ngay
-    </button>
+﻿@model VAYTIEN.Models.KhachHang
 
-    <div id="form-lam-the" style="display:none; margin-top: 20px;">
-        <form method="post" asp-controller="TaiKhoanNganHang" asp-action="Create">
-            <input type="hidden" name="MaKh" value="@Model.MaKh" />
-            <div class="mb-3">
-                <label class="form-label">Số tài khoản</label>
-                <input type="text" name="SoTaiKhoan" class="form-control" required />
+@{
+    ViewData["Title"] = "Thông tin cá nhân";
+}
+
+<!-- Vùng hiển thị thông báo thành công sau khi sửa -->
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        @ViewBag.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+
+@if (Model != null)
+{
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="bi bi-person-badge-fill me-2"></i>@ViewData["Title"]</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <!-- Hiển thị ảnh đại diện -->
+                                <img src="@(string.IsNullOrEmpty(Model.AnhDinhKem) ? "/images/default-avatar.png" : Model.AnhDinhKem)"
+                                     class="img-fluid rounded-circle mb-3"
+                                     alt="Ảnh đại diện"
+                                     style="width: 150px; height: 150px; object-fit: cover;">
+                            </div>
+                            <div class="col-md-8">
+                                <h3 class="text-primary">@Model.HoTen</h3>
+                                <p class="text-muted">@Model.Email</p>
+                                <hr />
+                                <dl class="row">
+                                    <dt class="col-sm-5">Số điện thoại:</dt>
+                                    <dd class="col-sm-7">@Model.Sdt</dd>
+
+                                    <dt class="col-sm-5">Ngày sinh:</dt>
+                                    <dd class="col-sm-7">@Model.NgaySinh?.ToString("dd/MM/yyyy")</dd>
+
+                                    <dt class="col-sm-5">CMND/CCCD:</dt>
+                                    <dd class="col-sm-7">@Model.CmndCccd</dd>
+
+                                    <dt class="col-sm-5">Địa chỉ:</dt>
+                                    <dd class="col-sm-7">@Model.DiaChi</dd>
+
+                                    <dt class="col-sm-5">Nghề nghiệp:</dt>
+                                    <dd class="col-sm-7">@Model.NgheNghiep</dd>
+
+                                    <dt class="col-sm-5">Hôn nhân:</dt>
+                                    <dd class="col-sm-7">@Model.TinhTrangHonNhan</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-end">
+                        <a asp-controller="TaiKhoanNganHang" asp-action="Edit" asp-route-id="@Model.MaKh" class="btn btn-outline-primary">
+                            <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa thông tin
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Tên ngân hàng</label>
-                <input type="text" name="TenNganHang" class="form-control" required />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Chi nhánh</label>
-                <input type="text" name="ChiNhanh" class="form-control" required />
-            </div>
-            <button type="submit" class="btn btn-success">Xác nhận đăng ký thẻ</button>
-        </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        Không tìm thấy thông tin khách hàng. Vui lòng
+        <a asp-controller="KhachHang" asp-action="CreateStep1">đăng ký thông tin</a>
+        để tiếp tục.
     </div>
 }

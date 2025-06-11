@@ -1,0 +1,91 @@
+﻿@model VAYTIEN.Models.LoaiVay
+
+@{
+    // Tiêu đề sẽ tự động đổi tùy thuộc vào model có MaLoaiVay hay không
+    bool isEditMode = Model != null && Model.MaLoaiVay > 0;
+    ViewData["Title"] = isEditMode ? "Chỉnh sửa Sản phẩm Vay" : "Tạo mới Sản phẩm Vay";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9 col-xl-8">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-5">
+                    <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3">
+                        <i class="bi @(isEditMode ? "bi-pencil-square" : "bi-box-seam-fill")"></i>
+                    </div>
+                    <h1 class="fw-bolder">@ViewData["Title"]</h1>
+                    <p class="lead fw-normal text-muted mb-0">Điền các thông tin chi tiết cho sản phẩm vay</p>
+                </div>
+
+                <form asp-action="@(isEditMode ? "Edit" : "Create")" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    @if (isEditMode)
+                    {
+                        <input type="hidden" asp-for="MaLoaiVay" />
+                    }
+
+                    <!-- Tên Sản phẩm Vay -->
+                    <div class="form-floating mb-3">
+                        <input asp-for="TenLoaiVay" class="form-control" id="tenLoaiVay" placeholder="Tên sản phẩm vay" />
+                        <label for="tenLoaiVay">Tên sản phẩm vay</label>
+                        <span asp-validation-for="TenLoaiVay" class="text-danger"></span>
+                    </div>
+
+                    <!-- Lãi suất & Kỳ hạn -->
+                    <div class="row gx-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input asp-for="LaiSuat" type="number" step="0.1" class="form-control" id="laiSuat" placeholder="Lãi suất" />
+                                <label for="laiSuat">Lãi Suất (% / năm)</label>
+                                <span asp-validation-for="LaiSuat" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input asp-for="KyHan" type="number" class="form-control" id="kyHan" placeholder="Kỳ hạn" />
+                                <label for="kyHan">Kỳ Hạn Tối Đa (tháng)</label>
+                                <span asp-validation-for="KyHan" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ghi Chú -->
+                    <div class="form-floating mb-3">
+                        <textarea asp-for="GhiChu" class="form-control" placeholder="Để lại ghi chú ở đây" id="ghiChu" style="height: 100px"></textarea>
+                        <label for="ghiChu">Ghi chú / Mô tả ngắn</label>
+                        <span asp-validation-for="GhiChu" class="text-danger"></span>
+                    </div>
+
+                    <!-- Các nút hành động -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Quay lại Danh sách</a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-save-fill me-2"></i>
+                            @(isEditMode ? "Lưu thay đổi" : "Tạo mới")
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <!-- Thêm CSS cho feature icon (tùy chọn) -->
+    <style>
+        .feature {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 3rem;
+            width: 3rem;
+            font-size: 1.5rem;
+        }
+    </style>
+}
