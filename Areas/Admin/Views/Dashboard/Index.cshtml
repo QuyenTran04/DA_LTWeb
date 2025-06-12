@@ -3,54 +3,93 @@
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+<h2 class="mb-4 fw-bold text-primary">Tổng quan</h2>
 
-<h2 class="mb-4 fw-bold text-primary text-center" style="font-family:'Montserrat',Arial,sans-serif;">Chào mừng, Quản trị viên</h2>
+<!-- Thay đổi layout để có 4 cột trên màn hình lớn (xl) -->
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
 
-<div class="row row-cols-1 row-cols-md-3 g-4">
+    <!-- Card: Yêu cầu chờ duyệt -->
     <div class="col">
-        <div class="card dashboard-card h-100">
-            <div class="card-body text-center">
-                <div class="dashboard-icon-bg">
-                    <i class="bi bi-hourglass-split fs-1 text-warning"></i>
+        <div class="card h-100 shadow-sm border-light-subtle">
+            <div class="card-body d-flex align-items-center">
+                <div class="flex-shrink-0 bg-warning bg-opacity-10 text-warning rounded-circle p-3">
+                    <i class="bi bi-hourglass-split fs-4"></i>
                 </div>
-                <div class="dashboard-card-title">Yêu cầu chờ phê duyệt</div>
-                <div class="dashboard-card-value">@ViewBag.TotalPending</div>
-                <a asp-area="Admin" asp-controller="HopDong" asp-action="ChoPheDuyet" class="dashboard-btn btn btn-light btn-sm">
-                    Phê duyệt hợp đồng
+                <div class="flex-grow-1 ms-3">
+                    <p class="text-muted mb-1">Chờ Phê Duyệt</p>
+                    <h4 class="mb-0">@ViewBag.TotalPending</h4>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 text-end">
+                <a asp-area="Admin" asp-controller="HopDong" asp-action="ChoPheDuyet" class="btn btn-sm btn-outline-secondary">
+                    Xem chi tiết <i class="bi bi-arrow-right-short"></i>
                 </a>
             </div>
         </div>
     </div>
 
+    <!-- Card: Tài khoản khách hàng -->
     <div class="col">
-        <div class="card dashboard-card h-100">
-            <div class="card-body text-center">
-                <div class="dashboard-icon-bg info">
-                    <i class="bi bi-person-check fs-1 text-info"></i>
+        <div class="card h-100 shadow-sm border-light-subtle">
+            <div class="card-body d-flex align-items-center">
+                <div class="flex-shrink-0 bg-info bg-opacity-10 text-info rounded-circle p-3">
+                    <i class="bi bi-people-fill fs-4"></i>
                 </div>
-                <div class="dashboard-card-title">Tài khoản khách hàng</div>
-                <div class="dashboard-card-value">@ViewBag.TotalCustomers</div>
-                <a asp-area="Admin" asp-controller="Account" asp-action="Index" class="dashboard-btn btn btn-outline-info">
-                    Quản lý tài khoản
+                <div class="flex-grow-1 ms-3">
+                    <p class="text-muted mb-1">Tổng Khách Hàng</p>
+                    <h4 class="mb-0">@ViewBag.TotalCustomers</h4>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 text-end">
+                <a asp-area="Admin" asp-controller="User" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                    Quản lý <i class="bi bi-arrow-right-short"></i>
                 </a>
             </div>
         </div>
     </div>
 
+    <!-- Card: Tổng hợp đồng -->
     <div class="col">
-        <div class="card dashboard-card h-100">
-            <div class="card-body text-center">
-                <div class="dashboard-icon-bg success">
-                    <i class="bi bi-file-earmark-text fs-1 text-success"></i>
+        <div class="card h-100 shadow-sm border-light-subtle">
+            <div class="card-body d-flex align-items-center">
+                <div class="flex-shrink-0 bg-success bg-opacity-10 text-success rounded-circle p-3">
+                    <i class="bi bi-journal-text fs-4"></i>
                 </div>
-                <div class="dashboard-card-title">Tổng hợp đồng vay</div>
-                <div class="dashboard-card-value">@ViewBag.TotalContracts</div>
-                <a asp-area="Admin" asp-controller="HopDong" asp-action="TongHopDong" class="dashboard-btn btn btn-outline-success">
-                    Xem tất cả hợp đồng
+                <div class="flex-grow-1 ms-3">
+                    <p class="text-muted mb-1">Tổng Hợp Đồng</p>
+                    <h4 class="mb-0">@ViewBag.TotalContracts</h4>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 text-end">
+                <a asp-area="Admin" asp-controller="HopDong" asp-action="TongHopDong" class="btn btn-sm btn-outline-secondary">
+                    Xem tất cả <i class="bi bi-arrow-right-short"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- THẺ MỚI: HIỂN THỊ SỐ DƯ TÀI KHOẢN CÔNG TY -->
+    <!-- ============================================= -->
+    <div class="col">
+        <div class="card h-100 shadow-sm border-primary">
+            <div class="card-body d-flex align-items-center">
+                <div class="flex-shrink-0 bg-primary bg-opacity-10 text-primary rounded-circle p-3">
+                    <i class="bi bi-wallet2 fs-4"></i>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <p class="text-muted mb-1">Số Dư Công Ty</p>
+                    <h4 class="mb-0 text-primary">@ViewBag.CompanyBalance.ToString("N0") <small>VNĐ</small></h4>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 text-end">
+                <!-- Nút này có thể dẫn đến trang Lịch sử giao dịch trong tương lai -->
+                <a class="nav-link active" asp-controller="GiaoDich" asp-action="Index">
+                    <i class="bi bi-house-door"></i> GiaoDich 
                 </a>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Bạn có thể thêm các biểu đồ hoặc bảng biểu khác ở đây -->

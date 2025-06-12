@@ -138,19 +138,41 @@
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="PhuongThuc" value="VNPAY" />
                         <label class="form-check-label"><img src="/images/vnpay.svg" alt="VNPAY" style="height:22px;vertical-align:-4px" /> VNPAY</label>
-                    </div>
-                </div>
 
-                <button type="submit" class="btn btn-pay">
-                    <i class="bi bi-arrow-right-circle"></i> Xác nhận thanh toán
-                </button>
-            </form>
-        }
-        else
-        {
-            <div class="pay-alert">
-                <i class="bi bi-info-circle"></i> Khoản vay này đã được thanh toán.
-            </div>
-        }
+                    </div>
+
+                    <button type="submit" class="btn btn-pay" id="payBtn">
+                        <i class="bi bi-shield-check"></i>
+                        Xác nhận thanh toán
+                    </button>
+                </form>
+            }
+            else
+            {
+                <div class="pay-alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Khoản vay này đã được thanh toán thành công.</span>
+                </div>
+            }
+        </div>
     </div>
 </div>
+
+<script>
+    // Add loading state when form is submitted
+    document.getElementById('payBtn')?.addEventListener('click', function() {
+        this.innerHTML = '<i class="spinner-border spinner-border-sm"></i> Đang xử lý...';
+        this.disabled = true;
+        document.querySelector('.card-confirm').classList.add('loading');
+    });
+
+    // Add smooth interactions for radio buttons
+    document.querySelectorAll('input[name="PhuongThuc"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.form-check').forEach(check => {
+                check.classList.remove('selected');
+            });
+            this.closest('.form-check').classList.add('selected');
+        });
+    });
+</script>
