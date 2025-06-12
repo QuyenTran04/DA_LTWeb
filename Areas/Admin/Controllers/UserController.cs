@@ -58,7 +58,6 @@ namespace VAYTIEN.Areas.Admin.Controllers
             }
             else
             {
-                // Nếu chưa bị khóa -> Khóa vĩnh viễn (bằng cách đặt ngày hết hạn trong tương lai rất xa)
                 await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.Now.AddYears(100));
                 TempData["Success"] = $"Đã khóa tài khoản của người dùng {user.UserName}.";
             }

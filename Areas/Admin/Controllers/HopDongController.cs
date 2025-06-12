@@ -40,7 +40,6 @@ namespace VAYTIEN.Areas.Admin.Controllers
 
             return View(list);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PheDuyet(int id)
@@ -48,32 +47,49 @@ namespace VAYTIEN.Areas.Admin.Controllers
             var hd = await _context.HopDongVays
                 .Include(h => h.MaKhNavigation)
                 .FirstOrDefaultAsync(h => h.MaHopDong == id);
+
             if (hd == null) return NotFound();
 
             hd.TinhTrang = "Đã duyệt";
             await _context.SaveChangesAsync();
 
-            // Tạo PDF & gửi email
-            var pdfPath = _pdfGenerator.GenerateHopDongTinDungPdf(hd, hd.MaKhNavigation!);
-            await _emailSender.SendEmailAsync(
-                hd.MaKhNavigation!.Email!,
-                "Thông báo phê duyệt hợp đồng tín dụng",
-                @"
-        <p>Kính gửi Quý khách <strong>" + hd.MaKhNavigation.HoTen + @"</strong>,</p>
-        <p>Ngân hàng chúng tôi trân trọng thông báo: yêu cầu vay vốn của Quý khách đã được phê duyệt.</p>
-        <p>Quý khách vui lòng xem chi tiết nội dung trong hợp đồng tín dụng đính kèm.</p>
-        <p>Vui lòng kiểm tra kỹ thông tin và liên hệ lại Chi nhánh/Phòng giao dịch gần nhất để hoàn tất thủ tục nhận tiền vay.</p>
-        <br/>
-        <p>Trân trọng,</p>
-        <p><strong>Sacombank</strong></p>
-    ",
-                pdfPath
-            );
+            try
+            {
+                // 🔍 Ghi log email và tệp PDF
+                var emailTo = hd.MaKhNavigation.Email!;
+                var hoTen = hd.MaKhNavigation.HoTen!;
+                var pdfPath = _pdfGenerator.GenerateHopDongTinDungPdf(hd, hd.MaKhNavigation!);
 
+                Console.WriteLine($"🔔 Gửi email tới: {emailTo}");
+                Console.WriteLine($"📄 File PDF: {pdfPath}");
 
-            TempData["Success"] = $"✅ Hợp đồng #{id} đã được duyệt và gửi email.";
+                await _emailSender.SendEmailAsync(
+                    emailTo,
+                    "Thông báo phê duyệt hợp đồng tín dụng",
+                    $@"
+                <p>Kính gửi Quý khách <strong>{hoTen}</strong>,</p>
+                <p>Ngân hàng chúng tôi trân trọng thông báo: yêu cầu vay vốn của Quý khách đã được phê duyệt.</p>
+                <p>Quý khách vui lòng xem chi tiết nội dung trong hợp đồng tín dụng đính kèm.</p>
+                <p>Vui lòng kiểm tra kỹ thông tin và liên hệ lại Chi nhánh/Phòng giao dịch gần nhất để hoàn tất thủ tục nhận tiền vay.</p>
+                <br/>
+                <p>Trân trọng,</p>
+                <p><strong>Sacombank</strong></p>
+            ",
+                    pdfPath
+                );
+
+                Console.WriteLine("✅ Email gửi thành công.");
+                TempData["Success"] = $"✅ Hợp đồng #{id} đã được duyệt và gửi email.";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ Lỗi gửi email: " + ex.Message);
+                TempData["Error"] = $"⚠️ Hợp đồng #{id} được duyệt nhưng gửi email thất bại.";
+            }
+
             return RedirectToAction("ChoPheDuyet");
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

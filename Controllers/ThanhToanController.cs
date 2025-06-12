@@ -1,12 +1,11 @@
-using Microsoft.AspNetCore.Authorization;
+
+using MailKit.Search;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System.Text;
 using VAYTIEN.Models;
-using VAYTIEN.Services;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
-[Authorize]
 public class ThanhToanController : Controller
 {
     private readonly QlvayTienContext _context;
@@ -23,51 +22,39 @@ public class ThanhToanController : Controller
     // GET: /ThanhToan/ChiTiet?maHopDong=11&kyHanThu=1
     public async Task<IActionResult> ChiTiet(int maHopDong, int kyHanThu)
     {
+        var hopDong = await _context.HopDongVays.FindAsync(maHopDong);
+        if (hopDong == null) return NotFound();
+
+        var kh = await _context.KhachHangs
+            .FirstOrDefaultAsync(k => k.MaKh == hopDong.MaKh);
+        if (kh == null) return NotFound();
+
         var lichTra = await _context.LichTraNos
-            .Include(l => l.MaHopDongNavigation.MaKhNavigation)
             .FirstOrDefaultAsync(x => x.MaHopDong == maHopDong && x.KyHanThu == kyHanThu);
-
-        if (lichTra?.MaHopDongNavigation?.MaKhNavigation == null)
-        {
-            return NotFound();
-        }
-
-        if (lichTra.MaHopDongNavigation.MaKhNavigation.Email != User.Identity.Name)
-        {
-            return Forbid();
-        }
 
         var viewModel = new ThanhToanViewModel
         {
             MaHopDong = maHopDong,
             KyHan = kyHanThu,
-            TenKhachHang = lichTra.MaHopDongNavigation.MaKhNavigation.HoTen,
-            NgayTra = lichTra.NgayTra?.ToDateTime(TimeOnly.MinValue) ?? DateTime.Today,
-            SoTienPhaiTra = lichTra.SoTienPhaiTra ?? 0,
-            TrangThai = lichTra.TrangThai ?? "Chưa trả"
+            TenKhachHang = kh.HoTen,
+            NgayTra = lichTra?.NgayTra?.ToDateTime(TimeOnly.MinValue) ?? DateTime.Today,
+            SoTienPhaiTra = lichTra?.SoTienPhaiTra ?? 0,
+            TrangThai = lichTra?.TrangThai ?? "Chưa trả"
         };
 
         return View(viewModel);
     }
-
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ThucHien(ThanhToanViewModel model)
     {
         var lichTra = await _context.LichTraNos
-            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.MaHopDong == model.MaHopDong && x.KyHanThu == model.KyHan);
 
         if (lichTra == null) return NotFound();
-        if (lichTra.TrangThai == "Đã trả")
-        {
-            TempData["Error"] = "Kỳ hạn này đã được thanh toán.";
-            return RedirectToAction("ChiTiet", new { maHopDong = model.MaHopDong, kyHanThu = model.KyHan });
-        }
 
-        if (model.PhuongThuc == "Momo")
+        if (lichTra.TrangThai != "Đã trả")
         {
-            try
+            if (model.PhuongThuc == "Momo")
             {
 
                 string orderId = $"{model.MaHopDong}_{model.KyHan}_{Guid.NewGuid().ToString().Substring(0, 8)}";
@@ -79,11 +66,17 @@ public class ThanhToanController : Controller
                 var payUrl = await _momoService.CreatePaymentAsync(orderId, (long)model.SoTienPhaiTra, orderInfo, returnUrl, notifyUrl);
                 return Redirect(payUrl);
             }
-            catch (Exception ex)
+
+            else if (model.PhuongThuc == "VNPAY")
             {
-                TempData["Error"] = "Không thể kết nối với MoMo. Vui lòng thử lại sau. Lỗi: " + ex.Message;
-                return RedirectToAction("ChiTiet", new { maHopDong = model.MaHopDong, kyHanThu = model.KyHan });
+                // Tích hợp tương tự cho VNPAY nếu có
+                return Redirect($"https://vnpay.vn/pay?amount={model.SoTienPhaiTra}&ref={model.MaHopDong}-{model.KyHan}");
             }
+
+            // Nếu không chọn cổng nào, xử lý nội bộ (không khuyến nghị)
+            lichTra.TrangThai = "Đã trả";
+            lichTra.NgayTra = DateOnly.FromDateTime(DateTime.Now);
+            await _context.SaveChangesAsync();
         }
         if (model.PhuongThuc == "VNPAY")
         {
@@ -98,51 +91,86 @@ public class ThanhToanController : Controller
         }
 
 
-        TempData["Error"] = "Vui lòng chọn phương thức thanh toán.";
-        return RedirectToAction("ChiTiet", new { maHopDong = model.MaHopDong, kyHanThu = model.KyHan });
-    }
-
-    // Action MoMo chuyển về sau khi thanh toán
-    public async Task<IActionResult> MoMoReturn()
-    {
-        var queryCollection = Request.Query;
-        if (queryCollection.Count > 0 && queryCollection.ContainsKey("resultCode") && queryCollection["resultCode"] == "0")
-        {
-            var orderId = queryCollection["orderId"].ToString();
-
-            var success = await ProcessSuccessfulPaymentAndUpdateDbAsync(orderId);
-            if (success)
-            {
-                TempData["Success"] = "Thanh toán thành công! Dư nợ của bạn đã được cập nhật.";
-            }
-            else
-            {
-                TempData["Error"] = "Giao dịch đã được xử lý trước đó hoặc có lỗi xảy ra.";
-            }
-        }
-        else
-        {
-            TempData["Error"] = "Thanh toán không thành công hoặc đã bị hủy.";
-        }
-
         return RedirectToAction("ThongTinVay", "KhachHang");
     }
+    // Action MoMo chuyển về sau khi thanh toán (redirect khách)
+    public async Task<IActionResult> MoMoReturn()
+    {
+        // Lấy các giá trị MoMo trả về (query string)
+        var orderId = Request.Query["orderId"];
+    var resultCode = Request.Query["resultCode"];
 
-    // Action nhận webhook MoMo (IPN)
-    [HttpPost]
+        if (resultCode == "0")
+        {
+            // Đã thanh toán thành công – update trạng thái
+            var ids = orderId.ToString().Split('_');
+    int maHopDong = int.Parse(ids[0]);
+    int kyHan = int.Parse(ids[1]);
+
+    var lichTra = await _context.LichTraNos
+        .FirstOrDefaultAsync(x => x.MaHopDong == maHopDong && x.KyHanThu == kyHan);
+
+            if (lichTra != null)
+            {
+                lichTra.TrangThai = "Đã trả";
+                lichTra.NgayTra = DateOnly.FromDateTime(DateTime.Now);
+
+                var hopDong = await _context.HopDongVays.FindAsync(maHopDong);
+                if (hopDong != null && lichTra.SoTienPhaiTra.HasValue)
+                {
+                    hopDong.SoTienConLai = (hopDong.SoTienConLai ?? hopDong.SoTienVay) - lichTra.SoTienPhaiTra.Value;
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
+            ViewBag.Message = "Thanh toán thành công!";
+        }
+        else
+            {
+                ViewBag.Message = "Thanh toán không thành công hoặc bị hủy.";
+            }
+        return View();
+    }
+
+
+    // Action nhận webhook MoMo (IPN, hệ thống gọi tự động)
+    [HttpPost] 
     public async Task<IActionResult> MoMoNotify()
     {
         using var reader = new StreamReader(Request.Body, Encoding.UTF8);
         var body = await reader.ReadToEndAsync();
-        dynamic? notifyData = JsonConvert.DeserializeObject(body);
 
-        if (notifyData != null && notifyData.resultCode == "0")
+        dynamic notifyData = Newtonsoft.Json.JsonConvert.DeserializeObject(body);
+        string orderId = notifyData.orderId;
+        string resultCode = notifyData.resultCode;
+
+        if (resultCode == "0")
         {
-            string orderId = notifyData.orderId;
-            await ProcessSuccessfulPaymentAndUpdateDbAsync(orderId);
+            var ids = orderId.ToString().Split('_');
+            int maHopDong = int.Parse(ids[0]);
+            int kyHan = int.Parse(ids[1]);
+
+            var lichTra = await _context.LichTraNos
+                .FirstOrDefaultAsync(x => x.MaHopDong == maHopDong && x.KyHanThu == kyHan);
+
+            if (lichTra != null)
+            {
+                lichTra.TrangThai = "Đã trả";
+                lichTra.NgayTra = DateOnly.FromDateTime(DateTime.Now);
+
+                var hopDong = await _context.HopDongVays.FindAsync(maHopDong);
+                if (hopDong != null && lichTra.SoTienPhaiTra.HasValue)
+                {
+                    hopDong.SoTienConLai = (hopDong.SoTienConLai ?? hopDong.SoTienVay) - lichTra.SoTienPhaiTra.Value;
+                }
+
+                await _context.SaveChangesAsync();
+            }
         }
 
-        return NoContent();
+       
+        return Ok();
     }
     public async Task<IActionResult> VnpayReturn()
     {

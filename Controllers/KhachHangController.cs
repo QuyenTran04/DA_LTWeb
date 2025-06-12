@@ -75,7 +75,6 @@ namespace VAYTIEN.Controllers
             ViewBag.LoaiTienTeList = _context.LoaiTienTes.ToList();
             return View();
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateStep2(HopDongVay hopDong, TaiSanTheChap taiSan)
@@ -84,8 +83,11 @@ namespace VAYTIEN.Controllers
                 return RedirectToAction("CreateStep1");
 
             var khachHang = JsonSerializer.Deserialize<KhachHang>(TempData["KhachHang"]!.ToString()!);
-            khachHang.Email = User.Identity?.Name;
 
+            // ❌ KHÔNG override Email nữa
+            // khachHang.Email = User.Identity?.Name; ❌ bỏ dòng này
+
+            // Nếu đã tồn tại KH theo email → dùng lại
             var existingKH = await _context.KhachHangs.FirstOrDefaultAsync(kh => kh.Email == khachHang.Email);
             if (existingKH != null)
             {
@@ -96,10 +98,11 @@ namespace VAYTIEN.Controllers
                 _context.KhachHangs.Add(khachHang);
                 await _context.SaveChangesAsync();
             }
+
+            // Tạo hợp đồng
             hopDong.MaKh = khachHang.MaKh;
             hopDong.TinhTrang = "Chờ phê duyệt";
-            hopDong.SoTienConLai = hopDong.SoTienVay; // ✅ Thêm dòng này
-
+            hopDong.SoTienConLai = hopDong.SoTienVay;
 
             if (!hopDong.NgayHetHan.HasValue && hopDong.NgayVay.HasValue && hopDong.KyHanThang.HasValue)
             {
@@ -109,10 +112,12 @@ namespace VAYTIEN.Controllers
             _context.HopDongVays.Add(hopDong);
             await _context.SaveChangesAsync();
 
+            // Tạo tài sản thế chấp
             taiSan.MaHopDong = hopDong.MaHopDong;
             _context.TaiSanTheChaps.Add(taiSan);
             await _context.SaveChangesAsync();
 
+            // Tạo lịch trả
             if (hopDong.KyHanThang.HasValue && hopDong.SoTienVay.HasValue && hopDong.NgayVay.HasValue)
             {
                 var kyHan = hopDong.KyHanThang.Value;
@@ -137,6 +142,7 @@ namespace VAYTIEN.Controllers
 
             return RedirectToAction("XacNhan");
         }
+
 
         public IActionResult XacNhan()
         {
