@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace VAYTIEN.Controllers
+namespace YourProjectNamespace.Controllers
 {
     public class PageController : Controller
     {

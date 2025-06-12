@@ -87,6 +87,7 @@
     <div class="row align-items-stretch g-4">
 
         <!-- Gói vay nhà ở -->
+        <!-- GÓI 1: Vay mua nhà -->
         <div class="col-md-6">
             <a asp-controller="Page" asp-action="Index" asp-route-id="1" class="text-decoration-none text-dark">
                 <div class="card-loan d-flex flex-row overflow-hidden h-100">
@@ -94,46 +95,117 @@
                         <img src="/images/muanha.webp" class="img-fluid h-100 w-100 object-fit-cover" alt="Vay nhà">
                     </div>
                     <div class="col-6 d-flex flex-column justify-content-center p-4 loan-content">
-                        <h4 class="loan-title">Vay nhu cầu nhà ở</h4>
-                        <p>Hỗ trợ mua nhà, xây dựng, cải tạo và sửa chữa với ưu đãi hấp dẫn.</p>
+                        <h4 class="loan-title">Vay mua nhà</h4>
+                        <p>Hỗ trợ mua, xây dựng, cải tạo nhà với lãi suất ưu đãi.</p>
                         <div class="mt-3">
-                            <div><strong>Lãi suất:</strong> <span class="text-highlight">Luôn tốt nhất</span></div>
-                            <div><strong>Thời gian vay:</strong> <span class="text-highlight">Đến 30 năm</span></div>
+                            <div><strong>Lãi suất:</strong> <span class="text-highlight">8.0%/năm</span></div>
+                            <div><strong>Kỳ hạn:</strong> <span class="text-highlight">36 tháng</span></div>
+                            <div><strong>Hạn mức:</strong> <span class="text-highlight">Đến 2 tỷ</span></div>
                         </div>
                     </div>
                 </div>
             </a>
         </div>
 
-
-        <!-- Các gói vay khác -->
-        @foreach (var goi in new[] {
-        new { Id = 2, Title = "Vay kinh doanh", Img = "/images/kinhdoanh.jpg" },
-        new { Id = 3, Title = "Vay du lịch", Img = "/images/dulich.webp" },
-        new { Id = 4, Title = "Vay du học", Img = "/images/duhoc.webp" },
-        new { Id = 5, Title = "Vay tín chấp", Img = "/images/tinchap.webp" },
-        new { Id = 6, Title = "Vay trả góp", Img = "/images/muanha.webp" }
-        })
-        {
-            <div class="col-md-6">
-                <a asp-controller="Page" asp-action="Index" asp-route-id="@goi.Id" class="text-decoration-none text-dark">
-                    <div class="card-loan d-flex flex-row overflow-hidden h-100">
-                        <div class="col-6 p-0">
-                            <img src="@goi.Img" class="img-fluid h-100 w-100 object-fit-cover" alt="@goi.Title" />
-                        </div>
-                        <div class="col-6 d-flex flex-column justify-content-center p-4 loan-content">
-                            <h4 class="loan-title">@goi.Title</h4>
-                            <p>Hỗ trợ vốn mở rộng kinh doanh với thủ tục nhanh gọn, giải ngân linh hoạt.</p>
-                            <div class="mt-3">
-                                <div><strong>Lãi suất:</strong> <span class="text-highlight">Chỉ từ 1.0%/tháng</span></div>
-                                <div><strong>Hạn mức:</strong> <span class="text-highlight">Đến 500 triệu</span></div>
-                            </div>
+        <!-- GÓI 2: Vay mua xe -->
+        <div class="col-md-6">
+            <a asp-controller="Page" asp-action="Index" asp-route-id="2" class="text-decoration-none text-dark">
+                <div class="card-loan d-flex flex-row overflow-hidden h-100">
+                    <div class="col-6 p-0">
+                        <img src="/images/tinchap.webp" class="img-fluid h-100 w-100 object-fit-cover" alt="Vay mua xe">
+                    </div>
+                    <div class="col-6 d-flex flex-column justify-content-center p-4 loan-content">
+                        <h4 class="loan-title">Vay mua xe</h4>
+                        <p>Hỗ trợ tài chính để mua ô tô dễ dàng hơn.</p>
+                        <div class="mt-3">
+                            <div><strong>Lãi suất:</strong> <span class="text-highlight">7.2%/năm</span></div>
+                            <div><strong>Kỳ hạn:</strong> <span class="text-highlight">24 tháng</span></div>
+                            <div><strong>Hạn mức:</strong> <span class="text-highlight">Đến 1 tỷ</span></div>
                         </div>
                     </div>
-                </a>
-            </div>
-        }
+                </div>
+            </a>
+        </div>
 
+        <!-- GÓI 3: Vay tiêu dùng -->
+        <div class="col-md-6">
+            <a asp-controller="Page" asp-action="Index" asp-route-id="3" class="text-decoration-none text-dark">
+                <div class="card-loan d-flex flex-row overflow-hidden h-100">
+                    <div class="col-6 p-0">
+                        <img src="/images/muanha.webp" class="img-fluid h-100 w-100 object-fit-cover" alt="Vay tiêu dùng">
+                    </div>
+                    <div class="col-6 d-flex flex-column justify-content-center p-4 loan-content">
+                        <h4 class="loan-title">Vay tiêu dùng</h4>
+                        <p>Đáp ứng nhu cầu chi tiêu cá nhân, thanh toán học phí, mua sắm.</p>
+                        <div class="mt-3">
+                            <div><strong>Lãi suất:</strong> <span class="text-highlight">6.5%/năm</span></div>
+                            <div><strong>Kỳ hạn:</strong> <span class="text-highlight">12 tháng</span></div>
+                            <div><strong>Hạn mức:</strong> <span class="text-highlight">Đến 300 triệu</span></div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- GÓI 4: Vay kinh doanh -->
+        <div class="col-md-6">
+            <a asp-controller="Page" asp-action="Index" asp-route-id="4" class="text-decoration-none text-dark">
+                <div class="card-loan d-flex flex-row overflow-hidden h-100">
+                    <div class="col-6 p-0">
+                        <img src="/images/kinhdoanh.jpg" class="img-fluid h-100 w-100 object-fit-cover" alt="Vay kinh doanh" />
+                    </div>
+                    <div class="col-6 d-flex flex-column justify-content-center p-4 loan-content">
+                        <h4 class="loan-title">Vay kinh doanh</h4>
+                        <p>Dành cho hộ kinh doanh nhỏ & vừa mở rộng vốn linh hoạt.</p>
+                        <div class="mt-3">
+                            <div><strong>Lãi suất:</strong> <span class="text-highlight">9.0%/năm</span></div>
+                            <div><strong>Kỳ hạn:</strong> <span class="text-highlight">18 tháng</span></div>
+                            <div><strong>Hạn mức:</strong> <span class="text-highlight">Đến 1.5 tỷ</span></div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- GÓI 5: Vay du lịch -->
+        <div class="col-md-6">
+            <a asp-controller="Page" asp-action="Index" asp-route-id="5" class="text-decoration-none text-dark">
+                <div class="card-loan d-flex flex-row overflow-hidden h-100">
+                    <div class="col-6 p-0">
+                        <img src="/images/dulich.webp" class="img-fluid h-100 w-100 object-fit-cover" alt="Vay du lịch" />
+                    </div>
+                    <div class="col-6 d-flex flex-column justify-content-center p-4 loan-content">
+                        <h4 class="loan-title">Vay du lịch</h4>
+                        <p>Thỏa sức đi du lịch với khoản vay nhẹ nhàng.</p>
+                        <div class="mt-3">
+                            <div><strong>Lãi suất:</strong> <span class="text-highlight">7.5%/năm</span></div>
+                            <div><strong>Kỳ hạn:</strong> <span class="text-highlight">12 tháng</span></div>
+                            <div><strong>Hạn mức:</strong> <span class="text-highlight">Đến 100 triệu</span></div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- GÓI 6: Vay du học -->
+        <div class="col-md-6">
+            <a asp-controller="Page" asp-action="Index" asp-route-id="6" class="text-decoration-none text-dark">
+                <div class="card-loan d-flex flex-row overflow-hidden h-100">
+                    <div class="col-6 p-0">
+                        <img src="/images/duhoc.webp" class="img-fluid h-100 w-100 object-fit-cover" alt="Vay du học" />
+                    </div>
+                    <div class="col-6 d-flex flex-column justify-content-center p-4 loan-content">
+                        <h4 class="loan-title">Vay du học</h4>
+                        <p>Hỗ trợ tài chính học phí và sinh hoạt phí cho sinh viên.</p>
+                        <div class="mt-3">
+                            <div><strong>Lãi suất:</strong> <span class="text-highlight">6.0%/năm</span></div>
+                            <div><strong>Kỳ hạn:</strong> <span class="text-highlight">60 tháng</span></div>
+                            <div><strong>Hạn mức:</strong> <span class="text-highlight">Đến 500 triệu</span></div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
 
     </div>
 </div>
