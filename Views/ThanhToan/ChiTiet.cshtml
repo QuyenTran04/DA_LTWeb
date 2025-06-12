@@ -1,71 +1,89 @@
 @model VAYTIEN.Models.ThanhToanViewModel
 
-<link rel="stylesheet" href="~/css/ThanhToan.css" asp-append-version="true" />
+<style>
+    .card-confirm {
+        background: linear-gradient(115deg, #fafdff 80%, #ffe06622 120%);
+        border-radius: 18px;
+        box-shadow: 0 6px 32px #7bb7f844, 0 1px 16px #ffe06626;
+        border: 1.5px solid #ffe06633;
+        margin-bottom: 32px;
+    }
 
-<div class="payment-container">
-    <h2 class="pay-info-title">
-        <i class="bi bi-credit-card-2-front"></i>
-        Xác nhận thanh toán
-    </h2>
+    .pay-info-title {
+        color: #1677c7;
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin-bottom: 14px;
+        letter-spacing: 0.5px;
+    }
 
-    <div class="card card-confirm">
-        <div class="card-body">
-            <dl class="row pay-dl">
-                <dt class="col-sm-4">Tên khách hàng</dt>
-                <dd class="col-sm-8">@Model.TenKhachHang</dd>
+    .pay-dl dt {
+        font-weight: 600;
+        color: #b3971b;
+        font-size: 1.09rem;
+    }
 
-                <dt class="col-sm-4">Kỳ hạn</dt>
-                <dd class="col-sm-8">@Model.KyHan</dd>
+    .pay-dl dd {
+        color: #23436e;
+        font-size: 1.09rem;
+        font-weight: 500;
+        margin-bottom: 14px;
+    }
 
-                <dt class="col-sm-4">Ngày trả</dt>
-                <dd class="col-sm-8">@Model.NgayTra.ToString("dd/MM/yyyy")</dd>
+    .pay-money {
+        font-size: 1.45rem !important;
+        color: #e5b100;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
 
-                <dt class="col-sm-4">Số tiền</dt>
-                <dd class="col-sm-8 pay-money">@Model.SoTienPhaiTra.ToString("N0") VNĐ</dd>
+    .badge-status-success {
+        background: linear-gradient(90deg, #8fdd98 30%, #4ab857 90%);
+        color: #173d1a;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 6px 22px;
+    }
 
-                <dt class="col-sm-4">Trạng thái</dt>
-                <dd class="col-sm-8">
-                    @if (Model.TrangThai == "Đã trả")
-                    {
-                        <span class="badge badge-status-success">
-                            <i class="bi bi-check2-circle"></i>
-                            Đã thanh toán
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="badge badge-status-warning">
-                            <i class="bi bi-exclamation-circle"></i>
-                            @Model.TrangThai
-                        </span>
-                    }
-                </dd>
-            </dl>
+    .badge-status-warning {
+        background: linear-gradient(90deg, #ffe066 30%, #ffdc7c 90%);
+        color: #7c5a00;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 6px 22px;
+    }
 
-            @if (Model.TrangThai != "Đã trả")
-            {
-                <form asp-action="ThucHien" method="post">
-                    <input type="hidden" name="MaHopDong" value="@Model.MaHopDong" />
-                    <input type="hidden" name="KyHan" value="@Model.KyHan" />
-                    <input type="hidden" name="NgayTra" value="@Model.NgayTra" />
-                    <input type="hidden" name="SoTienPhaiTra" value="@Model.SoTienPhaiTra" />
-                    <input type="hidden" name="TenKhachHang" value="@Model.TenKhachHang" />
+    .btn-pay {
+        background: linear-gradient(93deg, #ffe066 18%, #64b3ff 85%, #1677c7 110%);
+        color: #135d99;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.16rem;
+        padding: 12px 48px;
+        box-shadow: 0 4px 16px #ffd70022;
+        transition: all 0.19s;
+        margin-top: 4px;
+    }
 
-                    <div class="payment-methods">
-                        <label class="pay-method-label">
-                            <i class="bi bi-wallet2"></i>
-                            Chọn phương thức thanh toán
-                        </label>
+        .btn-pay:hover, .btn-pay:focus {
+            background: linear-gradient(97deg, #1677c7 35%, #ffe066 95%);
+            color: #fff;
+            box-shadow: 0 12px 38px #ffd70055;
+        }
 
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="PhuongThuc" value="Momo" id="momo" checked />
-                            <label class="form-check-label" for="momo">
-                                <img src="/images/logoMomo.png" alt="Momo" />
-                                <span>Ví MoMo</span>
-                            </label>
-                        </div>
+    .pay-alert {
+        background: #e3fafc;
+        border: 1px solid #bde0fe;
+        color: #1677c7;
+        border-radius: 10px;
+        padding: 13px 14px;
+        margin-top: 22px;
+        font-size: 1.05rem;
+    }
 
-<<<<<<< HEAD
     .pay-method-label {
         color: #134789;
         font-weight: 600;
@@ -120,15 +138,7 @@
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="PhuongThuc" value="VNPAY" />
                         <label class="form-check-label"><img src="/images/vnpay.svg" alt="VNPAY" style="height:22px;vertical-align:-4px" /> VNPAY</label>
-=======
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="PhuongThuc" value="VNPAY" id="vnpay" />
-                            <label class="form-check-label" for="vnpay">
-                                <img src="/images/vnpay.svg" alt="VNPAY" />
-                                <span>VNPAY</span>
-                            </label>
-                        </div>
->>>>>>> da13a376ca50c761dd86b6b63aef71d6bea9ee74
+
                     </div>
 
                     <button type="submit" class="btn btn-pay" id="payBtn">
