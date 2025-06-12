@@ -1,0 +1,128 @@
+﻿body {
+    background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
+    min-height: 100vh;
+}
+
+.loan-card {
+    border-radius: 22px;
+    box-shadow: 0 10px 32px 0 rgba(37,99,235,0.13), 0 1.5px 4px 0 rgba(16, 24, 40, 0.03);
+    border: none;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(2.5px);
+    transition: box-shadow 0.25s, transform 0.2s;
+}
+
+    .loan-card:hover {
+        box-shadow: 0 16px 40px 0 rgba(37,99,235,0.22), 0 2.5px 8px 0 rgba(16, 24, 40, 0.05);
+        transform: translateY(-3px) scale(1.013);
+    }
+
+.table th, .table td {
+    vertical-align: middle !important;
+    font-size: 1.08rem;
+    padding-top: 16px !important;
+    padding-bottom: 16px !important;
+}
+
+.table thead th {
+    background: linear-gradient(95deg, #2563eb 75%, #4f8cff 100%);
+    color: #fff;
+    font-weight: 700;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    letter-spacing: 0.7px;
+    font-size: 1.11rem;
+    border-bottom: none !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f3f7fd;
+}
+
+.badge {
+    font-size: 1.12em;
+    padding: 0.62em 1.4em;
+    border-radius: 1.5em;
+    letter-spacing: 0.6px;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.09);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    transition: transform 0.13s;
+    cursor: pointer;
+}
+
+    .badge:hover {
+        transform: scale(1.07) rotate(-2deg);
+        box-shadow: 0 3px 15px 0 rgba(37,99,235,0.14);
+    }
+
+.table-hover tbody tr:hover {
+    background-color: #dbeafe !important;
+    transition: background 0.18s;
+    box-shadow: 0 2px 14px 0 rgba(37,99,235,0.09);
+    z-index: 1;
+    position: relative;
+}
+
+.money {
+    color: #0ea5e9;
+    font-weight: 700;
+    font-size: 1.15em;
+    letter-spacing: 0.2px;
+}
+
+.icon-status {
+    font-size: 1.4em;
+    vertical-align: middle;
+    margin-right: 0.3em;
+    animation: iconPop 0.8s cubic-bezier(.68,-0.55,.27,1.55) both;
+}
+
+@keyframes iconPop {
+    0% {
+        transform: scale(0.6) rotate(-20deg);
+    }
+
+    60% {
+        transform: scale(1.15) rotate(8deg);
+    }
+
+    80% {
+        transform: scale(0.93) rotate(-6deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+    }
+}
+
+.loan-table-actions .btn {
+    border-radius: 1.2em;
+    padding: 0.36em 1.2em;
+    font-weight: 500;
+    font-size: 0.98em;
+    margin-left: 4px;
+    transition: background 0.16s, color 0.16s;
+}
+
+.loan-table-actions .btn-info {
+    background: #f1f5fd;
+    color: #2563eb;
+    border: none;
+}
+
+    .loan-table-actions .btn-info:hover {
+        background: #2563eb;
+        color: #fff;
+    }
+
+.loan-table-actions .btn-outline-primary {
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+    .loan-table-actions .btn-outline-primary:hover {
+        background: #2563eb;
+        color: #fff;
+    }
